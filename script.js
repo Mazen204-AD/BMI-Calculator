@@ -1,8 +1,4 @@
 
-/* =====================================
-   AURA — SMART WELLNESS ENGINE
-===================================== */
-
 const $ = id => document.getElementById(id);
 
 let weightUnit = "kg";
@@ -23,7 +19,7 @@ function getHeightCm() {
     }
 
     return (
-        (Number(feetInput.value) * 12) +
+        Number(feetInput.value) * 12 +
         Number(inchesInput.value)
     ) * 2.54;
 }
@@ -68,9 +64,9 @@ function updateHeight() {
     $("height-max").textContent = "250 cm";
 }
 
-// Hide previous results when measurements change
+// Hide previous results
 function hideResult() {
-    $("result").classList.add("hidden");
+    $("result").hidden = true;
     $("error").textContent = "";
 }
 
@@ -113,8 +109,8 @@ document.querySelectorAll(".height-unit").forEach(button => {
 
         heightUnit = nextUnit;
 
-        $("cm-input").classList.toggle("hidden", nextUnit !== "cm");
-        $("ft-input").classList.toggle("hidden", nextUnit !== "ft");
+        $("cm-input").hidden = nextUnit !== "cm";
+        $("ft-input").hidden = nextUnit !== "ft";
 
         if (nextUnit === "ft") {
             const totalInches = cm / 2.54;
@@ -139,7 +135,7 @@ document.querySelectorAll(".height-unit").forEach(button => {
     });
 });
 
-// Synchronise weight input and slider
+// Weight input and slider
 weightInput.addEventListener("input", () => {
     weightSlider.value = weightInput.value;
     hideResult();
@@ -150,7 +146,7 @@ weightSlider.addEventListener("input", () => {
     hideResult();
 });
 
-// Synchronise height input and slider
+// Height input and slider
 heightInput.addEventListener("input", () => {
     updateHeight();
     hideResult();
@@ -186,15 +182,17 @@ heightSlider.addEventListener("input", () => {
     hideResult();
 });
 
-// Animated BMI number
+// Animate BMI number
 function animateNumber(element, target) {
     const duration = 1000;
     const start = performance.now();
 
     function update(now) {
-        const progress = Math.min((now - start) / duration, 1);
+        const progress = Math.min(
+            (now - start) / duration,
+            1
+        );
 
-        // Smooth ease-out animation
         const eased = 1 - Math.pow(1 - progress, 4);
 
         element.textContent = (target * eased).toFixed(1);
@@ -214,17 +212,20 @@ function calculateBMI() {
     const rawWeight = Number(weightInput.value);
     const heightCm = getHeightCm();
 
+    // Check empty fields
     if (
         !weightInput.value.trim() ||
         (heightUnit === "cm" && !heightInput.value.trim()) ||
         (heightUnit === "ft" &&
-         (!feetInput.value.trim() || !inchesInput.value.trim()))
+            (!feetInput.value.trim() ||
+             !inchesInput.value.trim()))
     ) {
         $("error").textContent =
             "Please complete both measurement fields.";
         return;
     }
 
+    // Check valid numbers
     if (
         !Number.isFinite(rawWeight) ||
         !Number.isFinite(heightCm) ||
@@ -238,21 +239,23 @@ function calculateBMI() {
 
     const weightKg = getWeightKg();
 
+    // Check measurement limits
     if (
         weightKg > 500 ||
         heightCm < 50 ||
         heightCm > 250 ||
         (heightUnit === "ft" &&
-         (Number(feetInput.value) > 8 ||
-          Number(feetInput.value) < 1 ||
-          Number(inchesInput.value) > 11 ||
-          Number(inchesInput.value) < 0))
+            (Number(feetInput.value) > 8 ||
+             Number(feetInput.value) < 1 ||
+             Number(inchesInput.value) > 11 ||
+             Number(inchesInput.value) < 0))
     ) {
         $("error").textContent =
             "Please check your measurements and try again.";
         return;
     }
 
+    // BMI formula
     const heightM = heightCm / 100;
     const bmi = weightKg / (heightM * heightM);
 
@@ -263,11 +266,13 @@ function calculateBMI() {
     }
 
     // Display result
-    $("result-title").textContent = "Your BMI calculation is ready";
+    $("result-title").textContent =
+        "Your BMI calculation is ready";
+
     $("result-message").textContent =
         "Your BMI is one measurement of body size. It does not tell the whole story about your health.";
 
-    $("result").classList.remove("hidden");
+    $("result").hidden = false;
 
     animateNumber($("bmi-value"), bmi);
 
@@ -280,14 +285,14 @@ function calculateBMI() {
 // Calculate button
 $("calculate").addEventListener("click", calculateBMI);
 
-// Press Enter to calculate
+// Enter key support
 document.addEventListener("keydown", event => {
     if (event.key === "Enter") {
         calculateBMI();
     }
 });
 
-// Reset everything
+// Reset button
 $("reset").addEventListener("click", () => {
     weightUnit = "kg";
     heightUnit = "cm";
@@ -312,10 +317,10 @@ $("reset").addEventListener("click", () => {
         );
     });
 
-    $("cm-input").classList.remove("hidden");
-    $("ft-input").classList.add("hidden");
+    $("cm-input").hidden = false;
+    $("ft-input").hidden = true;
 
-    $("result").classList.add("hidden");
+    $("result").hidden = true;
     $("error").textContent = "";
 
     updateWeight();
@@ -323,6 +328,10 @@ $("reset").addEventListener("click", () => {
 });
 
 // Initial setup
+$("result").hidden = true;
+$("cm-input").hidden = false;
+$("ft-input").hidden = true;
+
 updateWeight();
 updateHeight();
 
