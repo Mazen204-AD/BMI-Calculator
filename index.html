@@ -1,11 +1,14 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#080719">
-    <title>AURA | Wellness Calculator</title>
+    <meta name="theme-color" content="#080817">
+
+    <title>AURA | BMI Calculator</title>
+
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -13,9 +16,14 @@
 
     <main class="container">
 
+        <!-- HERO SECTION -->
         <section class="intro">
+
             <div class="hero-copy">
-                <p class="eyebrow">✦ YOUR PERSONAL WELLNESS SPACE</p>
+
+                <p class="eyebrow">
+                    ✦ YOUR PERSONAL WELLNESS SPACE
+                </p>
 
                 <h1>
                     Discover your<br>
@@ -32,108 +40,312 @@
                     <span>✧ SIMPLE</span>
                     <span>✧ THOUGHTFUL</span>
                 </div>
+
             </div>
 
+            <!-- AURA ORB -->
             <div class="hero-art" aria-hidden="true">
+
                 <div class="orb-halo"></div>
+
                 <div class="orb-ring orb-ring-one"></div>
                 <div class="orb-ring orb-ring-two"></div>
+
                 <div class="aura-orb">
                     <div class="orb-core"></div>
                     <div class="orb-shine"></div>
                 </div>
+
                 <div class="orb-particle particle-one"></div>
                 <div class="orb-particle particle-two"></div>
                 <div class="orb-particle particle-three"></div>
-                <div class="orb-caption">A U R A ✦</div>
+
+                <div class="orb-caption">
+                    A U R A ✦
+                </div>
+
             </div>
+
         </section>
 
+
+        <!-- BMI CALCULATOR -->
         <section class="calculator-card">
+
             <div class="calculator-header">
-                <p class="eyebrow">✦ WELLNESS ANALYSIS</p>
+
+                <p class="eyebrow">
+                    ✦ WELLNESS ANALYSIS
+                </p>
+
                 <h2>Your measurements</h2>
-                <p>Enter your details to calculate your BMI.</p>
+
+                <p>
+                    Enter your details to calculate your BMI.
+                </p>
+
             </div>
 
+
+            <!-- AGE INPUT -->
             <div class="input-group">
+
+                <label for="age">Age</label>
+
+                <div class="input-row">
+
+                    <input
+                        type="number"
+                        id="age"
+                        placeholder="Enter your age"
+                        min="1"
+                        max="120"
+                    >
+
+                    <span>years</span>
+
+                </div>
+
+            </div>
+
+
+            <!-- WEIGHT INPUT -->
+            <div class="input-group">
+
                 <label for="weight">Weight</label>
 
                 <div class="unit-toggle">
-                    <button type="button" class="unit active" data-unit="kg">KG</button>
-                    <button type="button" class="unit" data-unit="lbs">LBS</button>
+
+                    <button
+                        type="button"
+                        class="unit active"
+                        data-unit="kg"
+                    >
+                        KG
+                    </button>
+
+                    <button
+                        type="button"
+                        class="unit"
+                        data-unit="lbs"
+                    >
+                        LBS
+                    </button>
+
                 </div>
 
                 <div class="input-row">
-                    <input type="number" id="weight" placeholder="57" min="1" step="0.1">
+
+                    <input
+                        type="number"
+                        id="weight"
+                        placeholder="65"
+                        min="1"
+                        step="0.1"
+                    >
+
                     <span id="weight-unit">kg</span>
+
                 </div>
 
-                <input type="range" id="weight-slider" min="20" max="200" value="57">
+                <input
+                    type="range"
+                    id="weight-slider"
+                    min="1"
+                    max="200"
+                    value="65"
+                >
 
                 <div class="range-labels">
-                    <span id="weight-min">20 kg</span>
+
+                    <span id="weight-min">1 kg</span>
                     <span id="weight-max">200 kg</span>
+
                 </div>
+
             </div>
 
+
+            <!-- HEIGHT INPUT -->
             <div class="input-group">
+
                 <label>Height</label>
 
                 <div class="unit-toggle">
-                    <button type="button" class="height-unit active" data-unit="cm">CM</button>
-                    <button type="button" class="height-unit" data-unit="ft">FT / IN</button>
+
+                    <button
+                        type="button"
+                        class="height-unit active"
+                        data-unit="cm"
+                    >
+                        CM
+                    </button>
+
+                    <button
+                        type="button"
+                        class="height-unit"
+                        data-unit="m"
+                    >
+                        METRES
+                    </button>
+
+                    <button
+                        type="button"
+                        class="height-unit"
+                        data-unit="ft"
+                    >
+                        FT / IN
+                    </button>
+
                 </div>
 
+
+                <!-- CENTIMETRES -->
                 <div id="cm-input" class="input-row">
-                    <input type="number" id="height" placeholder="170" min="50" max="250" step="0.1">
+
+                    <input
+                        type="number"
+                        id="height"
+                        placeholder="170"
+                        min="50"
+                        max="250"
+                        step="0.1"
+                    >
+
                     <span>cm</span>
+
                 </div>
 
+
+                <!-- METRES -->
+                <div id="metres-input" class="input-row" hidden>
+
+                    <input
+                        type="number"
+                        id="metres"
+                        placeholder="1.70"
+                        min="0.5"
+                        max="2.5"
+                        step="0.01"
+                    >
+
+                    <span>m</span>
+
+                </div>
+
+
+                <!-- FEET AND INCHES -->
                 <div id="ft-input" class="input-row" hidden>
-                    <input type="number" id="feet" placeholder="5" min="1" max="8">
+
+                    <input
+                        type="number"
+                        id="feet"
+                        placeholder="5"
+                        min="1"
+                        max="8"
+                    >
+
                     <span>ft</span>
-                    <input type="number" id="inches" placeholder="7" min="0" max="11">
+
+                    <input
+                        type="number"
+                        id="inches"
+                        placeholder="7"
+                        min="0"
+                        max="11"
+                    >
+
                     <span>in</span>
+
                 </div>
 
-                <input type="range" id="height-slider" min="50" max="250" value="170">
+
+                <!-- HEIGHT SLIDER -->
+                <input
+                    type="range"
+                    id="height-slider"
+                    min="50"
+                    max="250"
+                    value="170"
+                >
 
                 <div class="range-labels">
+
                     <span id="height-min">50 cm</span>
                     <span id="height-max">250 cm</span>
+
                 </div>
+
             </div>
 
+
+            <!-- ERROR MESSAGE -->
             <p id="error" role="alert"></p>
 
+
+            <!-- BUTTONS -->
             <div class="button-row">
-                <button type="button" id="calculate">Calculate BMI ✦</button>
-                <button type="button" id="reset">Reset</button>
+
+                <button type="button" id="calculate">
+                    Calculate BMI ✦
+                </button>
+
+                <button type="button" id="reset">
+                    Reset
+                </button>
+
             </div>
 
+
+            <!-- RESULT SECTION -->
             <div id="result" hidden>
-                <p class="eyebrow">YOUR RESULT</p>
-                <h2 id="result-title">Your BMI</h2>
+
+                <p class="eyebrow">
+                    YOUR RESULT
+                </p>
+
+                <h2 id="result-title">
+                    Your BMI
+                </h2>
+
                 <div class="result-circle">
+
                     <span id="bmi-value">0.0</span>
+
                 </div>
+
                 <p id="result-message"></p>
+
             </div>
 
+
+            <!-- DISCLAIMER -->
             <p class="disclaimer">
-                BMI is a screening measure, not a diagnosis. For people under
-                20, BMI needs to be interpreted using age- and sex-specific
-                growth charts.
+
+                BMI is a screening measure, not a diagnosis.
+                Adult BMI categories apply to adults aged 20 and above.
+                For people under 20, BMI must be interpreted using
+                age- and sex-specific growth charts.
+
             </p>
+
         </section>
 
+
+        <!-- FOOTER -->
         <footer>
-            <p>✦ AURA — A NEW PERSPECTIVE ON WELLNESS ✦</p>
+
+            <p>
+                ✦ AURA — A NEW PERSPECTIVE ON WELLNESS ✦
+            </p>
+
         </footer>
 
     </main>
 
+
+    <!-- JAVASCRIPT -->
     <script src="script.js"></script>
+
 </body>
 </html>
