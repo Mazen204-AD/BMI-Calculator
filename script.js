@@ -1,23 +1,50 @@
 
-const weightInput = document.getElementById("weight");
-const heightInput = document.getElementById("height");
-const weightSlider = document.getElementById("weight-slider");
-const heightSlider = document.getElementById("height-slider");
+/* =====================================
+   AURA — SMART WELLNESS ENGINE
+===================================== */
 
-const feetInput = document.getElementById("feet");
-const inchesInput = document.getElementById("inches");
+const $ = id => document.getElementById(id);
 
 let weightUnit = "kg";
 let heightUnit = "cm";
 
-const $ = id => document.getElementById(id);
+const weightInput = $("weight");
+const heightInput = $("height");
+const feetInput = $("feet");
+const inchesInput = $("inches");
 
-function updateWeightRange() {
+const weightSlider = $("weight-slider");
+const heightSlider = $("height-slider");
+
+// Convert height into centimetres
+function getHeightCm() {
+    if (heightUnit === "cm") {
+        return Number(heightInput.value);
+    }
+
+    return (
+        (Number(feetInput.value) * 12) +
+        Number(inchesInput.value)
+    ) * 2.54;
+}
+
+// Convert weight into kilograms
+function getWeightKg() {
+    const weight = Number(weightInput.value);
+
+    return weightUnit === "kg"
+        ? weight
+        : weight / 2.20462;
+}
+
+// Update weight slider
+function updateWeight() {
     const max = weightUnit === "kg" ? 200 : 440;
     const min = weightUnit === "kg" ? 1 : 2.2;
 
     weightSlider.min = min;
     weightSlider.max = max;
+
     weightSlider.value = Math.min(
         max,
         Math.max(min, Number(weightInput.value) || 65)
@@ -28,70 +55,70 @@ function updateWeightRange() {
     $("weight-max").textContent = `${max} ${weightUnit}`;
 }
 
-function updateHeightRange() {
-    const cm = getHeightCm();
-    heightSlider.value = Math.min(250, Math.max(50, cm || 170));
+// Update height slider
+function updateHeight() {
+    const height = getHeightCm();
+
+    heightSlider.value = Math.min(
+        250,
+        Math.max(50, height || 170)
+    );
 
     $("height-min").textContent = "50 cm";
     $("height-max").textContent = "250 cm";
 }
 
-function getHeightCm() {
-    if (heightUnit === "cm") {
-        return Number(heightInput.value);
-    }
-
-    const feet = Number(feetInput.value) || 0;
-    const inches = Number(inchesInput.value) || 0;
-
-    return (feet * 12 + inches) * 2.54;
+// Hide previous results when measurements change
+function hideResult() {
+    $("result").classList.add("hidden");
+    $("error").textContent = "";
 }
 
-// Weight unit switches
+// Weight unit switching
 document.querySelectorAll(".unit").forEach(button => {
     button.addEventListener("click", () => {
-        const oldUnit = weightUnit;
-        const newUnit = button.dataset.unit;
+        const nextUnit = button.dataset.unit;
 
-        if (oldUnit === newUnit) return;
+        if (nextUnit === weightUnit) return;
 
-        let value = Number(weightInput.value);
+        let weight = Number(weightInput.value);
 
-        if (value > 0) {
-            value = oldUnit === "kg"
-                ? value * 2.20462
-                : value / 2.20462;
+        if (weight > 0) {
+            weight = weightUnit === "kg"
+                ? weight * 2.20462
+                : weight / 2.20462;
 
-            weightInput.value = value.toFixed(1);
+            weightInput.value = weight.toFixed(1);
         }
 
-        weightUnit = newUnit;
+        weightUnit = nextUnit;
 
-        document.querySelectorAll(".unit").forEach(b =>
-            b.classList.toggle("active", b === button)
-        );
+        document.querySelectorAll(".unit").forEach(item => {
+            item.classList.toggle("active", item === button);
+        });
 
-        updateWeightRange();
-        $("error").textContent = "";
-        $("result").classList.add("hidden");
+        updateWeight();
+        hideResult();
     });
 });
 
-// Height unit switches
+// Height unit switching
 document.querySelectorAll(".height-unit").forEach(button => {
     button.addEventListener("click", () => {
-        const newUnit = button.dataset.unit;
+        const nextUnit = button.dataset.unit;
 
-        if (newUnit === heightUnit) return;
+        if (nextUnit === heightUnit) return;
 
         const cm = getHeightCm();
-        heightUnit = newUnit;
 
-        $("cm-input").classList.toggle("hidden", newUnit !== "cm");
-        $("ft-input").classList.toggle("hidden", newUnit !== "ft");
+        heightUnit = nextUnit;
 
-        if (newUnit === "ft" && cm > 0) {
+        $("cm-input").classList.toggle("hidden", nextUnit !== "cm");
+        $("ft-input").classList.toggle("hidden", nextUnit !== "ft");
+
+        if (nextUnit === "ft") {
             const totalInches = cm / 2.54;
+
             feetInput.value = Math.floor(totalInches / 12);
             inchesInput.value = Math.round(totalInches % 12);
 
@@ -99,32 +126,46 @@ document.querySelectorAll(".height-unit").forEach(button => {
                 feetInput.value = Number(feetInput.value) + 1;
                 inchesInput.value = 0;
             }
-        } else if (newUnit === "cm" && cm > 0) {
+        } else {
             heightInput.value = cm.toFixed(1);
         }
 
-        document.querySelectorAll(".height-unit").forEach(b =>
-            b.classList.toggle("active", b === button)
-        );
+        document.querySelectorAll(".height-unit").forEach(item => {
+            item.classList.toggle("active", item === button);
+        });
 
-        updateHeightRange();
-        $("error").textContent = "";
-        $("result").classList.add("hidden");
+        updateHeight();
+        hideResult();
     });
 });
 
-// Weight slider and input synchronization
-weightSlider.addEventListener("input", () => {
-    weightInput.value = weightSlider.value;
-    $("result").classList.add("hidden");
-});
-
+// Synchronise weight input and slider
 weightInput.addEventListener("input", () => {
     weightSlider.value = weightInput.value;
-    $("result").classList.add("hidden");
+    hideResult();
 });
 
-// Height slider and input synchronization
+weightSlider.addEventListener("input", () => {
+    weightInput.value = weightSlider.value;
+    hideResult();
+});
+
+// Synchronise height input and slider
+heightInput.addEventListener("input", () => {
+    updateHeight();
+    hideResult();
+});
+
+feetInput.addEventListener("input", () => {
+    updateHeight();
+    hideResult();
+});
+
+inchesInput.addEventListener("input", () => {
+    updateHeight();
+    hideResult();
+});
+
 heightSlider.addEventListener("input", () => {
     const cm = Number(heightSlider.value);
 
@@ -132,6 +173,7 @@ heightSlider.addEventListener("input", () => {
         heightInput.value = cm;
     } else {
         const totalInches = cm / 2.54;
+
         feetInput.value = Math.floor(totalInches / 12);
         inchesInput.value = Math.round(totalInches % 12);
 
@@ -141,58 +183,108 @@ heightSlider.addEventListener("input", () => {
         }
     }
 
-    $("result").classList.add("hidden");
+    hideResult();
 });
 
-[heightInput, feetInput, inchesInput].forEach(input => {
-    input.addEventListener("input", () => {
-        updateHeightRange();
-        $("result").classList.add("hidden");
-    });
-});
+// Animated BMI number
+function animateNumber(element, target) {
+    const duration = 1000;
+    const start = performance.now();
+
+    function update(now) {
+        const progress = Math.min((now - start) / duration, 1);
+
+        // Smooth ease-out animation
+        const eased = 1 - Math.pow(1 - progress, 4);
+
+        element.textContent = (target * eased).toFixed(1);
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+
+    requestAnimationFrame(update);
+}
 
 // Calculate BMI
-$("calculate").addEventListener("click", () => {
+function calculateBMI() {
     $("error").textContent = "";
 
-    const weight = Number(weightInput.value);
+    const rawWeight = Number(weightInput.value);
     const heightCm = getHeightCm();
 
-    if (!weightInput.value || !heightInput.value && heightUnit === "cm") {
-        $("error").textContent = "Please enter both your weight and height.";
+    if (
+        !weightInput.value.trim() ||
+        (heightUnit === "cm" && !heightInput.value.trim()) ||
+        (heightUnit === "ft" &&
+         (!feetInput.value.trim() || !inchesInput.value.trim()))
+    ) {
+        $("error").textContent =
+            "Please complete both measurement fields.";
         return;
     }
 
-    if (weight <= 0 || heightCm <= 0 ||
-        !Number.isFinite(weight) || !Number.isFinite(heightCm)) {
-        $("error").textContent = "Please enter valid positive measurements.";
+    if (
+        !Number.isFinite(rawWeight) ||
+        !Number.isFinite(heightCm) ||
+        rawWeight <= 0 ||
+        heightCm <= 0
+    ) {
+        $("error").textContent =
+            "Please enter valid positive measurements.";
         return;
     }
 
-    const weightKg = weightUnit === "kg"
-        ? weight
-        : weight / 2.20462;
+    const weightKg = getWeightKg();
+
+    if (
+        weightKg > 500 ||
+        heightCm < 50 ||
+        heightCm > 250 ||
+        (heightUnit === "ft" &&
+         (Number(feetInput.value) > 8 ||
+          Number(feetInput.value) < 1 ||
+          Number(inchesInput.value) > 11 ||
+          Number(inchesInput.value) < 0))
+    ) {
+        $("error").textContent =
+            "Please check your measurements and try again.";
+        return;
+    }
 
     const heightM = heightCm / 100;
+    const bmi = weightKg / (heightM * heightM);
 
-    if (weightKg > 500 || heightCm < 50 || heightCm > 250) {
-        $("error").textContent = "Please check your measurements.";
+    if (!Number.isFinite(bmi)) {
+        $("error").textContent =
+            "Unable to calculate. Please check your values.";
         return;
     }
 
-    const bmi = weightKg / (heightM * heightM);
-
-    $("bmi-value").textContent = bmi.toFixed(1);
-    $("result-title").textContent = "Your BMI result is ready";
+    // Display result
+    $("result-title").textContent = "Your BMI calculation is ready";
     $("result-message").textContent =
-        "This number is one measurement of body size. It does not tell the whole story about your health.";
+        "Your BMI is one measurement of body size. It does not tell the whole story about your health.";
 
     $("result").classList.remove("hidden");
+
+    animateNumber($("bmi-value"), bmi);
 
     $("result").scrollIntoView({
         behavior: "smooth",
         block: "nearest"
     });
+}
+
+// Calculate button
+$("calculate").addEventListener("click", calculateBMI);
+
+// Press Enter to calculate
+document.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+        calculateBMI();
+    }
 });
 
 // Reset everything
@@ -202,16 +294,23 @@ $("reset").addEventListener("click", () => {
 
     weightInput.value = 65;
     heightInput.value = 170;
+
     feetInput.value = 5;
     inchesInput.value = 7;
 
-    document.querySelectorAll(".unit").forEach(b =>
-        b.classList.toggle("active", b.dataset.unit === "kg")
-    );
+    document.querySelectorAll(".unit").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.dataset.unit === "kg"
+        );
+    });
 
-    document.querySelectorAll(".height-unit").forEach(b =>
-        b.classList.toggle("active", b.dataset.unit === "cm")
-    );
+    document.querySelectorAll(".height-unit").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.dataset.unit === "cm"
+        );
+    });
 
     $("cm-input").classList.remove("hidden");
     $("ft-input").classList.add("hidden");
@@ -219,9 +318,12 @@ $("reset").addEventListener("click", () => {
     $("result").classList.add("hidden");
     $("error").textContent = "";
 
-    updateWeightRange();
-    updateHeightRange();
+    updateWeight();
+    updateHeight();
 });
 
-updateWeightRange();
-updateHeightRange();
+// Initial setup
+updateWeight();
+updateHeight();
+
+console.log("✦ AURA Wellness Engine initialized successfully.");
