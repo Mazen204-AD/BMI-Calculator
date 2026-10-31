@@ -1,23 +1,133 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMI Calculator</title>
+    <meta name="theme-color" content="#090d1b">
+    <title>AURA | BMI & Wellness</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>BMI Calculator</h1>
-        <form id="bmiForm">
-            <label for="weight">Weight (kg):</label>
-            <input type="number" id="weight" required>
-            <label for="height">Height (m):</label>
-            <input type="number" id="height" required>
-            <button type="submit">Calculate BMI</button>
-        </form>
-        <div id="result" class="result"></div>
-    </div>
-    <script src="script.js"></script>
+
+<div class="ambient ambient-one"></div>
+<div class="ambient ambient-two"></div>
+
+<main class="app">
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-icon">A</div>
+            <span>AURA<span class="brand-dot">.</span></span>
+        </div>
+        <span class="status"><span></span> WELLNESS STUDIO</span>
+    </header>
+
+    <section class="intro">
+        <p class="eyebrow">YOUR PERSONAL WELLNESS SPACE</p>
+        <h1>Know your numbers.<br><span>Understand your health.</span></h1>
+        <p class="subtitle">A simple, thoughtful way to explore your Body Mass Index.</p>
+    </section>
+
+    <section class="calculator">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">01 — YOUR MEASUREMENTS</p>
+                <h2>Let's get started</h2>
+            </div>
+            <div class="sparkle">✦</div>
+        </div>
+
+        <div class="measurement">
+            <div class="measure-heading">
+                <label for="weight">Weight</label>
+                <div class="unit-switch">
+                    <button class="unit active" data-unit="kg" type="button">KG</button>
+                    <button class="unit" data-unit="lbs" type="button">LBS</button>
+                </div>
+            </div>
+
+            <div class="value-input">
+                <input id="weight" type="number" min="1" max="500"
+                    step="0.1" placeholder="65" value="65">
+                <span id="weight-unit">kg</span>
+            </div>
+            <input id="weight-slider" class="slider" type="range"
+                min="1" max="200" value="65" step="0.5">
+            <div class="range-labels">
+                <span id="weight-min">1 kg</span>
+                <span id="weight-max">200 kg</span>
+            </div>
+        </div>
+
+        <div class="measurement">
+            <div class="measure-heading">
+                <label>Height</label>
+                <div class="unit-switch">
+                    <button class="height-unit active" data-unit="cm" type="button">CM</button>
+                    <button class="height-unit" data-unit="ft" type="button">FT / IN</button>
+                </div>
+            </div>
+
+            <div class="value-input" id="cm-input">
+                <input id="height" type="number" min="50" max="250"
+                    step="0.1" placeholder="170" value="170">
+                <span>cm</span>
+            </div>
+
+            <div class="value-input feet-input hidden" id="ft-input">
+                <input id="feet" type="number" min="1" max="8" value="5">
+                <span>ft</span>
+                <input id="inches" type="number" min="0" max="11" value="7">
+                <span>in</span>
+            </div>
+
+            <input id="height-slider" class="slider" type="range"
+                min="50" max="250" value="170" step="0.5">
+            <div class="range-labels">
+                <span id="height-min">50 cm</span>
+                <span id="height-max">250 cm</span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="calculate" class="primary-button" type="button">
+                Calculate my BMI <span>↗</span>
+            </button>
+            <button id="reset" class="reset-button" type="button">↻ Reset</button>
+        </div>
+
+        <p id="error" class="error" aria-live="polite"></p>
+
+        <section id="result" class="result hidden" aria-live="polite">
+            <p class="eyebrow">02 — YOUR RESULT</p>
+            <div class="result-circle">
+                <span class="result-label">YOUR BMI</span>
+                <strong id="bmi-value">00.0</strong>
+            </div>
+            <h3 id="result-title">Your result</h3>
+            <p id="result-message"></p>
+            <p class="disclaimer">
+                BMI is a screening measurement, not a diagnosis. For people
+                under 20, interpretation requires age- and sex-specific
+                growth charts. Please discuss your result with a healthcare
+                professional.
+            </p>
+        </section>
+    </section>
+
+    <section class="info">
+        <p class="eyebrow">A LITTLE REMINDER</p>
+        <h2>Health is more than a number.</h2>
+        <p>Wellbeing includes sleep, nutrition, movement, mental wellness
+           and many other things. Treat this calculator as an educational tool.</p>
+    </section>
+
+    <footer>
+        <span> AURA © 2026 </span>
+        <span>DESIGNED WITH PURPOSE ✦</span>
+    </footer>
+</main>
+
+<script src="script.js"></script>
 </body>
 </html>
