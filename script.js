@@ -6,22 +6,28 @@ let heightUnit = "cm";
 
 const weightInput = $("weight");
 const heightInput = $("height");
+const metresInput = $("metres");
 const feetInput = $("feet");
 const inchesInput = $("inches");
+const ageInput = $("age");
 
 const weightSlider = $("weight-slider");
 const heightSlider = $("height-slider");
 
-// Convert height into centimetres
-function getHeightCm() {
+// Convert all height units into metres
+function getHeightMetres() {
     if (heightUnit === "cm") {
-        return Number(heightInput.value);
+        return Number(heightInput.value) / 100;
+    }
+
+    if (heightUnit === "m") {
+        return Number(metresInput.value);
     }
 
     return (
         Number(feetInput.value) * 12 +
         Number(inchesInput.value)
-    ) * 2.54;
+    ) * 0.0254;
 }
 
 // Convert weight into kilograms
@@ -33,10 +39,16 @@ function getWeightKg() {
         : weight / 2.20462;
 }
 
+// Hide previous result
+function hideResult() {
+    $("result").hidden = true;
+    $("error").textContent = "";
+}
+
 // Update weight slider
 function updateWeight() {
-    const max = weightUnit === "kg" ? 200 : 440;
     const min = weightUnit === "kg" ? 1 : 2.2;
+    const max = weightUnit === "kg" ? 200 : 440;
 
     weightSlider.min = min;
     weightSlider.max = max;
@@ -53,21 +65,12 @@ function updateWeight() {
 
 // Update height slider
 function updateHeight() {
-    const height = getHeightCm();
+    const heightCm = getHeightMetres() * 100;
 
     heightSlider.value = Math.min(
         250,
-        Math.max(50, height || 170)
+        Math.max(50, heightCm || 170)
     );
-
-    $("height-min").textContent = "50 cm";
-    $("height-max").textContent = "250 cm";
-}
-
-// Hide previous results
-function hideResult() {
-    $("result").hidden = true;
-    $("error").textContent = "";
 }
 
 // Weight unit switching
@@ -105,15 +108,24 @@ document.querySelectorAll(".height-unit").forEach(button => {
 
         if (nextUnit === heightUnit) return;
 
-        const cm = getHeightCm();
+        const heightM = getHeightMetres();
 
         heightUnit = nextUnit;
 
         $("cm-input").hidden = nextUnit !== "cm";
+        $("metres-input").hidden = nextUnit !== "m";
         $("ft-input").hidden = nextUnit !== "ft";
 
+        if (nextUnit === "cm") {
+            heightInput.value = (heightM * 100).toFixed(1);
+        }
+
+        if (nextUnit === "m") {
+            metresInput.value = heightM.toFixed(2);
+        }
+
         if (nextUnit === "ft") {
-            const totalInches = cm / 2.54;
+            const totalInches = heightM / 0.0254;
 
             feetInput.value = Math.floor(totalInches / 12);
             inchesInput.value = Math.round(totalInches % 12);
@@ -122,8 +134,6 @@ document.querySelectorAll(".height-unit").forEach(button => {
                 feetInput.value = Number(feetInput.value) + 1;
                 inchesInput.value = 0;
             }
-        } else {
-            heightInput.value = cm.toFixed(1);
         }
 
         document.querySelectorAll(".height-unit").forEach(item => {
@@ -146,27 +156,25 @@ weightSlider.addEventListener("input", () => {
     hideResult();
 });
 
-// Height input and slider
-heightInput.addEventListener("input", () => {
-    updateHeight();
-    hideResult();
+// Height inputs
+[heightInput, metresInput, feetInput, inchesInput].forEach(input => {
+    input.addEventListener("input", () => {
+        updateHeight();
+        hideResult();
+    });
 });
 
-feetInput.addEventListener("input", () => {
-    updateHeight();
-    hideResult();
-});
+// Age input
+ageInput.addEventListener("input", hideResult);
 
-inchesInput.addEventListener("input", () => {
-    updateHeight();
-    hideResult();
-});
-
+// Height slider
 heightSlider.addEventListener("input", () => {
     const cm = Number(heightSlider.value);
 
     if (heightUnit === "cm") {
-        heightInput.value = cm;
+        heightInput.value = cm.toFixed(1);
+    } else if (heightUnit === "m") {
+        metresInput.value = (cm / 100).toFixed(2);
     } else {
         const totalInches = cm / 2.54;
 
@@ -209,54 +217,55 @@ function animateNumber(element, target) {
 function calculateBMI() {
     $("error").textContent = "";
 
+    const age = Number(ageInput.value);
     const rawWeight = Number(weightInput.value);
-    const heightCm = getHeightCm();
+    const heightM = getHeightMetres();
 
-    // Check empty fields
     if (
+        !ageInput.value.trim() ||
         !weightInput.value.trim() ||
         (heightUnit === "cm" && !heightInput.value.trim()) ||
+        (heightUnit === "m" && !metresInput.value.trim()) ||
         (heightUnit === "ft" &&
             (!feetInput.value.trim() ||
              !inchesInput.value.trim()))
     ) {
         $("error").textContent =
-            "Please complete both measurement fields.";
+            "Please complete all fields.";
         return;
     }
 
-    // Check valid numbers
     if (
+        !Number.isFinite(age) ||
+        age < 1 || age > 120 ||
         !Number.isFinite(rawWeight) ||
-        !Number.isFinite(heightCm) ||
+        !Number.isFinite(heightM) ||
         rawWeight <= 0 ||
-        heightCm <= 0
+        heightM <= 0
     ) {
         $("error").textContent =
-            "Please enter valid positive measurements.";
+            "Please enter valid measurements and age.";
         return;
     }
 
     const weightKg = getWeightKg();
 
-    // Check measurement limits
     if (
         weightKg > 500 ||
-        heightCm < 50 ||
-        heightCm > 250 ||
+        heightM < 0.5 ||
+        heightM > 2.5 ||
         (heightUnit === "ft" &&
-            (Number(feetInput.value) > 8 ||
-             Number(feetInput.value) < 1 ||
-             Number(inchesInput.value) > 11 ||
-             Number(inchesInput.value) < 0))
+            (Number(feetInput.value) < 1 ||
+             Number(feetInput.value) > 8 ||
+             Number(inchesInput.value) < 0 ||
+             Number(inchesInput.value) > 11))
     ) {
         $("error").textContent =
-            "Please check your measurements and try again.";
+            "Please check your measurements.";
         return;
     }
 
-    // BMI formula
-    const heightM = heightCm / 100;
+    // BMI formula: weight / height²
     const bmi = weightKg / (heightM * heightM);
 
     if (!Number.isFinite(bmi)) {
@@ -265,12 +274,28 @@ function calculateBMI() {
         return;
     }
 
-    // Display result
-    $("result-title").textContent =
-        "Your BMI calculation is ready";
+    $("result-title").textContent = "Your BMI result";
 
-    $("result-message").textContent =
-        "Your BMI is one measurement of body size. It does not tell the whole story about your health.";
+    // Adult BMI categories: age 20+
+    if (age >= 20) {
+        let category;
+
+        if (bmi < 18.5) {
+            category = "Underweight";
+        } else if (bmi < 25) {
+            category = "Healthy weight";
+        } else if (bmi < 30) {
+            category = "Overweight";
+        } else {
+            category = "Obesity";
+        }
+
+        $("result-message").textContent =
+            `Adult BMI category: ${category}. These general adult categories are screening guidelines, not a diagnosis.`;
+    } else {
+        $("result-message").textContent =
+            "For people under 20, BMI must be interpreted using age- and sex-specific growth charts. Adult BMI categories do not apply.";
+    }
 
     $("result").hidden = false;
 
@@ -297,9 +322,10 @@ $("reset").addEventListener("click", () => {
     weightUnit = "kg";
     heightUnit = "cm";
 
+    ageInput.value = "";
     weightInput.value = 65;
     heightInput.value = 170;
-
+    metresInput.value = 1.70;
     feetInput.value = 5;
     inchesInput.value = 7;
 
@@ -318,6 +344,7 @@ $("reset").addEventListener("click", () => {
     });
 
     $("cm-input").hidden = false;
+    $("metres-input").hidden = true;
     $("ft-input").hidden = true;
 
     $("result").hidden = true;
@@ -330,6 +357,7 @@ $("reset").addEventListener("click", () => {
 // Initial setup
 $("result").hidden = true;
 $("cm-input").hidden = false;
+$("metres-input").hidden = true;
 $("ft-input").hidden = true;
 
 updateWeight();
